@@ -40,6 +40,7 @@
   --shadow-accent: 0 0 20px var(--accent-glow);
   --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   --border-radius: 16px;
+  --bg-day-info: linear-gradient(135deg, rgba(22, 29, 50, 0.5) 0%, rgba(13, 18, 33, 0.8) 100%);
 }
 
 /* Modo Claro Override */
@@ -79,6 +80,7 @@
   
   --shadow-neon: 0 4px 15px rgba(5, 150, 105, 0.1);
   --shadow-accent: 0 4px 15px rgba(124, 58, 237, 0.1);
+  --bg-day-info: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
 }
 
 :root[data-theme="light"] body {
@@ -90,10 +92,12 @@
 
 :root[data-theme="light"] .brand-title {
   background: linear-gradient(135deg, #0f172a 25%, var(--primary) 100%);
+  -webkit-background-clip: text;
 }
 
 :root[data-theme="light"] .nav-logo {
   background: linear-gradient(135deg, #0f172a 10%, var(--primary) 100%);
+  -webkit-background-clip: text;
 }
 
 /* Switch de Modo Claro / Oscuro */
@@ -655,7 +659,7 @@ body {
 
 /* Info del Día de Entrenamiento */
 .routine-day-info {
-  background: linear-gradient(135deg, rgba(22, 29, 50, 0.5) 0%, rgba(13, 18, 33, 0.8) 100%);
+  background: var(--bg-day-info);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   padding: 20px;
