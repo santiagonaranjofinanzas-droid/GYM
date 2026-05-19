@@ -233,7 +233,7 @@ function renderWorkoutDayView(state) {
       suggestionHtml = `
         <div class="overload-suggestion">
           <div class="suggestion-text">
-            💡 Sobrecarga Sugerida: <span class="highlight">${suggestion.suggestedWeight} kg</span> — <span class="reason">${suggestion.reason}</span>
+            Sobrecarga Sugerida: <span class="highlight">${suggestion.suggestedWeight} kg</span> — <span class="reason">${suggestion.reason}</span>
           </div>
           <button class="btn-apply-suggestion" data-ex-id="${ex.id}" data-weight="${suggestion.suggestedWeight}">
             Aplicar
@@ -628,6 +628,29 @@ function renderHistoryTable(userLogs) {
 // 5. EVENT LISTENERS GENERALES
 // -------------------------------------------------------------
 function setupGeneralEventListeners() {
+  // Inicializar Tema Guardado
+  const savedTheme = localStorage.getItem("theme") || "dark";
+  document.documentElement.setAttribute("data-theme", savedTheme);
+
+  // Switch de Modo Claro / Oscuro
+  const themeToggleBtn = document.getElementById("theme-toggle");
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+      const newTheme = currentTheme === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      
+      // Forzar re-render de gráficos para adaptar colores
+      setTimeout(() => {
+        if (typeof renderProgressChart === "function") renderProgressChart();
+        if (typeof store !== "undefined" && typeof renderWeightHistoryChart === "function") {
+          renderWeightHistoryChart(store.state);
+        }
+      }, 50);
+    });
+  }
+
   // Cambio de Perfil
   document.getElementById("btn-change-user").addEventListener("click", () => {
     store.setActiveUser(null);
@@ -786,7 +809,12 @@ function setupRestTimerUI() {
         <circle class="rest-timer-bg-circle" cx="27" cy="27" r="25"></circle>
         <circle class="rest-timer-progress-circle" id="rest-timer-progress-circle" cx="27" cy="27" r="25"></circle>
       </svg>
-      <div class="rest-timer-icon">⏱️</div>
+      <div class="rest-timer-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+      </div>
     </div>
     <div class="rest-timer-content">
       <span class="rest-timer-label">Tiempo de Descanso</span>
@@ -871,33 +899,9 @@ function updateTimerDisplay() {
 // 7. TOAST NOTIFICATIONS (POP-UPS DENTRO DE LA APP)
 // -------------------------------------------------------------
 export function showToast(title, message, type = "success") {
-  const container = document.getElementById("toast-container");
-  
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-  
-  let icon = "🦾";
-  if (type === "pr-hit") icon = "🔥";
-  if (title.includes("Descanso")) icon = "⏱️";
-  if (title.includes("Error")) icon = "❌";
-
-  toast.innerHTML = `
-    <span class="toast-icon">${icon}</span>
-    <div class="toast-content">
-      <span class="toast-title">${title}</span>
-      <span class="toast-message">${message}</span>
-    </div>
-  `;
-  
-  container.appendChild(toast);
-  
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    toast.style.transform = "translateY(-15px) scale(0.95)";
-    setTimeout(() => {
-      toast.remove();
-    }, 400);
-  }, 4500);
+  // Las notificaciones en pantalla se han quitado por completo a petición del usuario.
+  // Silencioso console.log de control para depuración
+  console.log(`[Toast Silenciado] ${title}: ${message}`);
 }
 
 // -------------------------------------------------------------

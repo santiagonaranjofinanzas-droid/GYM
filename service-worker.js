@@ -1,6 +1,6 @@
 // SERVICE-WORKER.JS - CACHÉ Y ESTRATEGIA OFFLINE PARA ENTORNOS DE GIMNASIO
 
-const CACHE_NAME = "hibrida-elite-v5-cache-v1";
+const CACHE_NAME = "gym-dashboard-cache-v2";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",

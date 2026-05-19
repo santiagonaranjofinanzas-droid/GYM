@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Híbrida Elite v5.0 — Central de Progreso</title>
+  <title>GYM DASHBOARD</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#0d0e12">
@@ -19,7 +19,7 @@
     <div class="welcome-container">
       <div class="brand-header">
         <span class="brand-badge">Progreso de Alto Rendimiento</span>
-        <h1 class="brand-title">Híbrida Elite</h1>
+        <h1 class="brand-title">GYM DASHBOARD</h1>
         <p class="brand-subtitle">Central de Sobrecarga Progresiva · Versión 5.0</p>
       </div>
 
@@ -55,9 +55,26 @@
     <!-- Barra de Navegación Superior -->
     <nav class="navbar">
       <div class="nav-brand">
-        <span class="nav-logo">HÍBRIDA ELITE <span>V5.0</span></span>
+        <span class="nav-logo">GYM DASHBOARD</span>
       </div>
       <div class="nav-actions">
+        <!-- SWITCH DE MODO CLARO / OSCURO CON SOL Y LUNA (SVG) -->
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Cambiar tema">
+          <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
         <div id="user-badge" class="current-user-badge" data-active="">
           <div class="user-badge-dot"></div>
           <span id="active-user-name" class="user-badge-name">-</span>
@@ -77,13 +94,13 @@
         </div>
         <div class="view-tabs">
           <button class="tab-btn active" data-view="workout">
-            <span class="tab-icon">🏋️‍♂️</span> Entrenamiento
+            Entrenamiento
           </button>
           <button class="tab-btn" data-view="analytics">
-            <span class="tab-icon">📊</span> Progreso & Métricas
+            Progreso & Métricas
           </button>
           <button class="tab-btn" data-view="settings">
-            <span class="tab-icon">⚙️</span> Perfil & Peso
+            Perfil & Peso
           </button>
         </div>
       </div>
@@ -147,7 +164,7 @@
           <!-- Botón de Guardar Entrenamiento -->
           <div class="workout-footer">
             <button id="btn-save-workout" class="btn-save-workout">
-              <span>💾</span> Guardar Entrenamiento
+              Guardar Entrenamiento
             </button>
           </div>
 
@@ -277,7 +294,7 @@
 
               <div style="margin-top: 10px;">
                 <button id="btn-save-settings" class="btn-save-workout" style="width: 100%; padding: 12px 20px;">
-                  <span>💾</span> Guardar Medidas y Peso
+                  Guardar Medidas y Peso
                 </button>
               </div>
             </div>

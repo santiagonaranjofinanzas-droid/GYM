@@ -26,8 +26,86 @@
   
   --shadow-neon: 0 0 20px var(--primary-glow);
   --shadow-accent: 0 0 20px var(--accent-glow);
+  --shadow-neon: 0 0 20px var(--primary-glow);
+  --shadow-accent: 0 0 20px var(--accent-glow);
   --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   --border-radius: 16px;
+}
+
+/* Modo Claro Override */
+:root[data-theme="light"] {
+  --bg-base: #f1f5f9;
+  --bg-surface: rgba(255, 255, 255, 0.8);
+  --bg-surface-solid: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(241, 245, 249, 0.95);
+  
+  --primary: #059669; /* Verde esmeralda para excelente contraste claro */
+  --primary-glow: rgba(5, 150, 105, 0.15);
+  --secondary: #0284c7; /* Azul cielo deportivo para métricas */
+  --secondary-glow: rgba(2, 132, 199, 0.15);
+  --accent: #7c3aed; /* Violeta noble de fuerza */
+  --accent-glow: rgba(124, 58, 237, 0.15);
+  
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-dark: #ffffff;
+  
+  --border-color: rgba(15, 23, 42, 0.08);
+  --border-hover: rgba(5, 150, 105, 0.25);
+  --border-active: rgba(2, 132, 199, 0.35);
+  
+  --shadow-neon: 0 4px 15px rgba(5, 150, 105, 0.1);
+  --shadow-accent: 0 4px 15px rgba(124, 58, 237, 0.1);
+}
+
+:root[data-theme="light"] body {
+  background-image: 
+    radial-gradient(at 10% 20%, rgba(124, 58, 237, 0.04) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(2, 132, 199, 0.04) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(5, 150, 105, 0.02) 0px, transparent 50%);
+}
+
+/* Switch de Modo Claro / Oscuro */
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: var(--transition-smooth);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--secondary);
+  box-shadow: 0 0 10px var(--secondary-glow);
+}
+
+/* Control de iconos del Switch */
+:root[data-theme="dark"] .sun-icon {
+  display: none;
+}
+:root[data-theme="dark"] .moon-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  color: var(--secondary);
+}
+
+:root[data-theme="light"] .moon-icon {
+  display: none;
+}
+:root[data-theme="light"] .sun-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  color: #ea580c;
 }
 
 /* Reset y Base */
@@ -1318,20 +1396,20 @@ body {
   position: fixed;
   bottom: 25px;
   right: 25px;
-  background: rgba(13, 18, 33, 0.85);
+  background: var(--bg-surface-solid);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 15px 20px;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 229, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 18px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.25);
   display: flex;
   align-items: center;
   gap: 15px;
   z-index: 1000;
   transform: translateY(120%);
   opacity: 0;
-  transition: transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
 }
 
 .rest-timer-card.active {
@@ -1341,8 +1419,8 @@ body {
 
 .rest-timer-circle-area {
   position: relative;
-  width: 54px;
-  height: 54px;
+  width: 46px;
+  height: 46px;
 }
 
 .rest-timer-svg {
@@ -1353,11 +1431,11 @@ body {
 
 .rest-timer-svg circle {
   fill: none;
-  stroke-width: 4;
+  stroke-width: 3.5;
 }
 
 .rest-timer-bg-circle {
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: var(--border-color);
 }
 
 .rest-timer-progress-circle {
@@ -1373,7 +1451,10 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 1.1rem;
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .rest-timer-content {
@@ -1382,19 +1463,19 @@ body {
 }
 
 .rest-timer-label {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 600;
+  letter-spacing: 0.8px;
+  font-weight: 700;
 }
 
 .rest-timer-digits {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--secondary);
-  letter-spacing: 1px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: 0.5px;
 }
 
 .rest-timer-actions {
