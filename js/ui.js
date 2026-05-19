@@ -43,6 +43,58 @@ function playSportsChime() {
   }
 }
 
+function getCssVar(name, fallback) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallback;
+}
+
+function withAlpha(color, alpha) {
+  if (!color) return color;
+  const trimmed = color.trim();
+  if (trimmed.startsWith("rgb")) {
+    const parts = trimmed.replace(/rgba?\(|\)/g, "").split(",").map(part => part.trim());
+    if (parts.length >= 3) {
+      return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
+    }
+    return trimmed;
+  }
+  if (trimmed.startsWith("#")) {
+    let hex = trimmed.slice(1);
+    if (hex.length === 3) {
+      hex = hex.split("").map(ch => ch + ch).join("");
+    }
+    if (hex.length === 6) {
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+  }
+  return trimmed;
+}
+
+function getChartThemeColors() {
+  const isLight = document.documentElement.getAttribute("data-theme") === "light";
+  const primary = getCssVar("--primary", "#00f59b");
+  const accent = getCssVar("--accent", "#9d4edd");
+  const secondary = getCssVar("--secondary", "#00e5ff");
+  const text = getCssVar("--text-main", "#f3f4f6");
+  const muted = getCssVar("--text-muted", "#828fa3");
+
+  return {
+    primary,
+    accent,
+    secondary,
+    text,
+    muted,
+    grid: isLight ? "rgba(15, 23, 42, 0.08)" : "rgba(255, 255, 255, 0.03)",
+    tooltipBg: isLight ? "#ffffff" : "#0d1221",
+    tooltipBorder: isLight ? "rgba(15, 23, 42, 0.12)" : "rgba(255, 255, 255, 0.08)",
+    primaryFill: withAlpha(primary, isLight ? 0.12 : 0.08),
+    secondaryFill: withAlpha(secondary, isLight ? 0.12 : 0.08)
+  };
+}
+
 // Inicializar la interfaz una vez que el DOM está cargado
 export function initializeUI() {
   // Suscribir los actualizadores principales al Store Observable
@@ -528,6 +580,7 @@ function renderProgressChart() {
   });
 
   const ctx = document.getElementById("progress-chart").getContext("2d");
+  const colors = getChartThemeColors();
   
   if (chartInstance) {
     chartInstance.destroy();
@@ -541,10 +594,10 @@ function renderProgressChart() {
         {
           label: "Peso Máximo (kg)",
           data: maxWeights,
-          borderColor: "#00f59b",
-          backgroundColor: "rgba(0, 245, 155, 0.05)",
+          borderColor: colors.primary,
+          backgroundColor: colors.primaryFill,
           borderWidth: 3,
-          pointBackgroundColor: "#00f59b",
+          pointBackgroundColor: colors.primary,
           pointRadius: 5,
           pointHoverRadius: 7,
           tension: 0.25,
@@ -553,11 +606,11 @@ function renderProgressChart() {
         {
           label: "1RM Estimado (kg)",
           data: max1RMs,
-          borderColor: "#9d4edd",
+          borderColor: colors.accent,
           backgroundColor: "transparent",
           borderWidth: 2,
           borderDash: [5, 5],
-          pointBackgroundColor: "#9d4edd",
+          pointBackgroundColor: colors.accent,
           pointRadius: 4,
           tension: 0.25
         }
@@ -568,24 +621,24 @@ function renderProgressChart() {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          labels: { color: "#f3f4f6", font: { family: 'Outfit', size: 12 } }
+          labels: { color: colors.text, font: { family: 'Outfit', size: 12 } }
         },
         tooltip: {
-          backgroundColor: "#0d1221",
-          titleColor: "#f3f4f6",
-          bodyColor: "#f3f4f6",
-          borderColor: "rgba(255,255,255,0.08)",
+          backgroundColor: colors.tooltipBg,
+          titleColor: colors.text,
+          bodyColor: colors.text,
+          borderColor: colors.tooltipBorder,
           borderWidth: 1
         }
       },
       scales: {
         x: {
-          grid: { color: "rgba(255,255,255,0.03)" },
-          ticks: { color: "#828fa3" }
+          grid: { color: colors.grid },
+          ticks: { color: colors.muted }
         },
         y: {
-          grid: { color: "rgba(255,255,255,0.03)" },
-          ticks: { color: "#828fa3" }
+          grid: { color: colors.grid },
+          ticks: { color: colors.muted }
         }
       }
     }
@@ -1007,6 +1060,7 @@ function renderWeightHistoryChart(state) {
   const canvas = document.getElementById("weight-history-chart");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
+  const colors = getChartThemeColors();
 
   if (weightChartInstance) {
     weightChartInstance.destroy();
@@ -1020,10 +1074,10 @@ function renderWeightHistoryChart(state) {
         {
           label: "Peso Corporal (kg)",
           data: weights,
-          borderColor: "#3a86ff",
-          backgroundColor: "rgba(58, 134, 255, 0.05)",
+          borderColor: colors.secondary,
+          backgroundColor: colors.secondaryFill,
           borderWidth: 3,
-          pointBackgroundColor: "#3a86ff",
+          pointBackgroundColor: colors.secondary,
           pointRadius: 5,
           pointHoverRadius: 7,
           tension: 0.25,
@@ -1036,24 +1090,24 @@ function renderWeightHistoryChart(state) {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          labels: { color: "#f3f4f6", font: { family: 'Outfit', size: 12 } }
+          labels: { color: colors.text, font: { family: 'Outfit', size: 12 } }
         },
         tooltip: {
-          backgroundColor: "#0d1221",
-          titleColor: "#f3f4f6",
-          bodyColor: "#f3f4f6",
-          borderColor: "rgba(255,255,255,0.08)",
+          backgroundColor: colors.tooltipBg,
+          titleColor: colors.text,
+          bodyColor: colors.text,
+          borderColor: colors.tooltipBorder,
           borderWidth: 1
         }
       },
       scales: {
         x: {
-          grid: { color: "rgba(255,255,255,0.03)" },
-          ticks: { color: "#828fa3" }
+          grid: { color: colors.grid },
+          ticks: { color: colors.muted }
         },
         y: {
-          grid: { color: "rgba(255,255,255,0.03)" },
-          ticks: { color: "#828fa3" }
+          grid: { color: colors.grid },
+          ticks: { color: colors.muted }
         }
       }
     }
