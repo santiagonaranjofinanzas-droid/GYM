@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Híbrida Elite v5.0 — Central de Progreso</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Chart.js para las gráficas interactivas -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- 1. PANTALLA DE CARGA / SELECTOR DE PERFILES (PRE-LOADER) -->
+  <section id="welcome-screen" class="welcome-screen">
+    <div class="welcome-container">
+      <div class="brand-header">
+        <span class="brand-badge">Progreso de Alto Rendimiento</span>
+        <h1 class="brand-title">Híbrida Elite</h1>
+        <p class="brand-subtitle">Central de Sobrecarga Progresiva · Versión 5.0</p>
+      </div>
+
+      <h2 class="profile-selector-title">Selecciona tu Perfil</h2>
+      
+      <div class="profiles-grid">
+        <!-- Tarjeta Mateo -->
+        <div class="profile-card" data-user="mateo">
+          <div class="profile-avatar">M</div>
+          <h3 class="profile-name">Mateo</h3>
+          <p class="profile-meta">Último entrenamiento: <span id="mateo-last-day">Ninguno</span></p>
+        </div>
+
+        <!-- Tarjeta Santiago -->
+        <div class="profile-card" data-user="santiago">
+          <div class="profile-avatar">S</div>
+          <h3 class="profile-name">Santiago</h3>
+          <p class="profile-meta">Último entrenamiento: <span id="santiago-last-day">Ninguno</span></p>
+        </div>
+
+        <!-- Tarjeta Alim -->
+        <div class="profile-card" data-user="alim">
+          <div class="profile-avatar">A</div>
+          <h3 class="profile-name">Alim</h3>
+          <p class="profile-meta">Último entrenamiento: <span id="alim-last-day">Ninguno</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. CONTENEDOR PRINCIPAL DE LA APP (DASHBOARD) -->
+  <main id="app-container" class="app-container hidden">
+    <!-- Barra de Navegación Superior -->
+    <nav class="navbar">
+      <div class="nav-brand">
+        <span class="nav-logo">HÍBRIDA ELITE <span>V5.0</span></span>
+      </div>
+      <div class="nav-actions">
+        <div id="user-badge" class="current-user-badge" data-active="">
+          <div class="user-badge-dot"></div>
+          <span id="active-user-name" class="user-badge-name">-</span>
+        </div>
+        <button id="btn-change-user" class="btn-change-user">Cambiar Perfil</button>
+      </div>
+    </nav>
+
+    <!-- Área de Contenido Principal -->
+    <div class="main-content">
+      
+      <!-- Encabezado con pestaña de navegación principal -->
+      <div class="dashboard-header">
+        <div class="welcome-msg">
+          <h1 id="greeting-title">¡A entrenar, <span class="username" id="greeting-username">-</span>!</h1>
+          <p id="greeting-subtitle">Mantén la sobrecarga y bate tus marcas de la semana anterior.</p>
+        </div>
+        <div class="view-tabs">
+          <button class="tab-btn active" data-view="workout">
+            <span class="tab-icon">🏋️‍♂️</span> Entrenamiento
+          </button>
+          <button class="tab-btn" data-view="analytics">
+            <span class="tab-icon">📊</span> Progreso & Métricas
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= VISTA DE ENTRENAMIENTO ================= -->
+      <section id="view-workout" class="content-section active">
+        <!-- Selector de Día -->
+        <div class="day-selector-container">
+          <div id="day-selector" class="day-selector">
+            <!-- Rellenado dinámicamente mediante JS -->
+          </div>
+        </div>
+
+        <!-- Información General del Día Seleccionado -->
+        <div class="routine-day-info">
+          <div class="day-info-text">
+            <h2 id="current-day-title">-</h2>
+            <p id="current-day-focus">-</p>
+          </div>
+          <div id="current-day-volume" class="day-info-volume">-</div>
+        </div>
+
+        <!-- Cuadrícula de Contenido de Rutina -->
+        <div class="workout-grid">
+          
+          <!-- Bloque de Activación -->
+          <div id="activation-card" class="workout-card-simple">
+            <h3>Fase de Activación</h3>
+            <div id="activation-list" class="checklist-grid">
+              <!-- Rellenado dinámicamente mediante JS -->
+            </div>
+          </div>
+
+          <!-- Bloque de Ejercicios Principales (Fuerza e Hipertrofia) -->
+          <div id="main-exercises-container" style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- Las tarjetas de cada ejercicio se insertarán dinámicamente -->
+          </div>
+
+          <!-- Bloque de Core/Abdomen -->
+          <div id="core-card" class="workout-card-simple hidden">
+            <h3>Trabajo de Core / Abdomen</h3>
+            <div id="core-list" class="checklist-grid">
+              <!-- Rellenado dinámicamente mediante JS -->
+            </div>
+          </div>
+
+          <!-- Bloque de Cardio -->
+          <div id="cardio-card" class="workout-card-simple hidden">
+            <h3>Trabajo de Cardio</h3>
+            <div id="cardio-container">
+              <div class="checklist-item" id="cardio-item">
+                <input type="checkbox" id="cardio-checkbox" class="checklist-checkbox">
+                <div class="checklist-text">
+                  <span class="checklist-name" id="cardio-name">-</span>
+                  <span class="checklist-target" id="cardio-target">-</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botón de Guardar Entrenamiento -->
+          <div class="workout-footer">
+            <button id="btn-save-workout" class="btn-save-workout">
+              <span>💾</span> Guardar Entrenamiento
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= VISTA DE ANALÍTICAS ================= -->
+      <section id="view-analytics" class="content-section">
+        
+        <!-- Tarjetas de Métricas de Alto Valor -->
+        <div class="metrics-summary-grid">
+          <!-- 1RM Promedio -->
+          <div class="metric-summary-card">
+            <span class="metric-card-label">1RM Promedio Fuerza</span>
+            <div class="metric-card-value">
+              <span id="metric-avg-1rm">-</span>
+              <span class="unit">kg</span>
+            </div>
+            <div class="metric-card-change" id="metric-change-1rm">-</div>
+          </div>
+
+          <!-- Volumen Acumulado de la Semana -->
+          <div class="metric-summary-card">
+            <span class="metric-card-label">Volumen Total Semanal</span>
+            <div class="metric-card-value">
+              <span id="metric-total-volume">-</span>
+              <span class="unit">kg</span>
+            </div>
+            <div class="metric-card-change" id="metric-change-volume">-</div>
+          </div>
+
+          <!-- Días Entrenados (Consistencia) -->
+          <div class="metric-summary-card">
+            <span class="metric-card-label">Consistencia Mensual</span>
+            <div class="metric-card-value">
+              <span id="metric-consistency">-</span>
+              <span class="unit">%</span>
+            </div>
+            <div class="metric-card-change neutral" id="metric-change-consistency">Frecuencia recomendada</div>
+          </div>
+
+          <!-- Récords Personales Activos -->
+          <div class="metric-summary-card">
+            <span class="metric-card-label">Récords Personales (PRs)</span>
+            <div class="metric-card-value">
+              <span id="metric-pr-count">-</span>
+              <span class="unit">PRs</span>
+            </div>
+            <div class="metric-card-change up" id="metric-change-pr">¡Superándote en cada set!</div>
+          </div>
+        </div>
+
+        <!-- Secciones de Análisis Detallado -->
+        <div class="analytics-layout">
+          
+          <!-- Tarjeta del Gráfico -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title-area">
+                <h3>Curva de Sobrecarga Progresiva</h3>
+                <p>Evolución de peso máximo y fuerza estimada 1RM a lo largo del tiempo</p>
+              </div>
+              <div class="chart-controls">
+                <select id="select-chart-exercise" class="select-custom">
+                  <!-- Rellenado dinámicamente con todos los ejercicios -->
+                </select>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="progress-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Historial Detallado de Registros -->
+          <div class="history-card">
+            <h3>Registro Histórico de Entrenamientos</h3>
+            <div class="history-table-container">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Día</th>
+                    <th>Volumen Total</th>
+                    <th>Mejora (Delta)</th>
+                    <th>Ejercicios Registrados</th>
+                  </tr>
+                </thead>
+                <tbody id="history-table-body">
+                  <!-- Insertado por JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- 3. TOAST NOTIFICATIONS CONTAINER -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts de la Aplicación -->
+  <script src="routine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
