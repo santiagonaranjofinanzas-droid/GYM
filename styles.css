@@ -1171,3 +1171,264 @@ body {
   color: var(--text-muted);
   margin-top: 2px;
 }
+
+/* ------------------------------------------------------------- */
+/* 6. DISEÑO PRO: RIR, TEMPORIZADOR DE DESCANSO Y SOBRECARGA DINÁMICA */
+/* ------------------------------------------------------------- */
+
+/* Redefinición del Grid de las series para soportar RIR y Checkbox */
+.sets-table-header, .set-row {
+  display: grid;
+  grid-template-columns: 70px 1.2fr 1fr 1fr 1fr 0.8fr;
+  gap: 10px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .sets-table-header {
+    display: none;
+  }
+  .set-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 8px;
+    padding: 15px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .set-number {
+    grid-column: span 2;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    padding-bottom: 4px;
+  }
+  .previous-stats {
+    grid-column: span 2;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+}
+
+/* RIR Dropdown Custom */
+.rir-select {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 8px 6px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.rir-select:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 10px var(--secondary-glow);
+}
+
+.rir-select option {
+  background-color: var(--bg-surface-solid);
+  color: var(--text-main);
+}
+
+/* Botón Check de Serie Completada */
+.complete-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.complete-checkbox {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--text-muted);
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.complete-checkbox:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.complete-checkbox:checked::after {
+  content: '✓';
+  color: var(--text-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+/* Sugerencias de Sobrecarga Progresiva */
+.overload-suggestion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 245, 155, 0.05);
+  border: 1px dashed var(--primary-glow);
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+  animation: fadeIn 0.3s ease;
+}
+
+.suggestion-text {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.suggestion-text span.highlight {
+  color: var(--primary);
+  font-weight: 700;
+  text-shadow: 0 0 5px var(--primary-glow);
+}
+
+.btn-apply-suggestion {
+  background: rgba(0, 245, 155, 0.15);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition-smooth);
+}
+
+.btn-apply-suggestion:hover {
+  background: var(--primary);
+  color: var(--text-dark);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
+/* Temporizador de Descanso Flotante */
+.rest-timer-card {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: rgba(13, 18, 33, 0.85);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 15px 20px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 229, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 1000;
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.3s ease;
+}
+
+.rest-timer-card.active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.rest-timer-circle-area {
+  position: relative;
+  width: 54px;
+  height: 54px;
+}
+
+.rest-timer-svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.rest-timer-svg circle {
+  fill: none;
+  stroke-width: 4;
+}
+
+.rest-timer-bg-circle {
+  stroke: rgba(255, 255, 255, 0.06);
+}
+
+.rest-timer-progress-circle {
+  stroke: var(--secondary);
+  stroke-dasharray: 157; /* 2 * PI * r (r=25) */
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.rest-timer-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.1rem;
+}
+
+.rest-timer-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.rest-timer-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.rest-timer-digits {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--secondary);
+  letter-spacing: 1px;
+}
+
+.rest-timer-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-timer-action {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+}
+
+.btn-timer-action:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--text-muted);
+}
+
+.btn-timer-action.skip {
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.2);
+}
+
+.btn-timer-action.skip:hover {
+  background: rgba(255, 107, 107, 0.1);
+}
+
