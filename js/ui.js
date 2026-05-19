@@ -50,6 +50,7 @@ export function initializeUI() {
   store.subscribe(renderDashboardUser);
   store.subscribe(renderWorkoutDayView);
   store.subscribe(renderAnalyticsView);
+  store.subscribe(renderSettingsView);
 
   setupGeneralEventListeners();
   setupRestTimerUI();
@@ -652,6 +653,27 @@ function setupGeneralEventListeners() {
     });
   });
 
+  // Guardar configuración de perfil físico (estatura, peso)
+  document.getElementById("btn-save-settings").addEventListener("click", async () => {
+    const heightVal = parseFloat(document.getElementById("settings-height").value);
+    const weightVal = parseFloat(document.getElementById("settings-weight").value);
+
+    if (!heightVal || heightVal <= 0 || !weightVal || weightVal <= 0) {
+      showToast("⚠️ Valores Inválidos", "Por favor ingresa estatura y peso corporal mayores a cero.", "success");
+      return;
+    }
+
+    try {
+      await store.updateProfileSettings(store.state.activeUser, heightVal, weightVal);
+      
+      // Feedback Sonoro e Háptico
+      if (navigator.vibrate) navigator.vibrate([60, 60]);
+      showToast("⚙️ Configuración Guardada", `Se actualizó estatura a ${heightVal} cm y peso corporal de hoy a ${weightVal} kg.`, "success");
+    } catch (err) {
+      showToast("❌ Error al Guardar", err.message, "success");
+    }
+  });
+
   // Selectores de Gráfico
   document.getElementById("select-chart-exercise").addEventListener("change", () => {
     renderProgressChart();
@@ -876,4 +898,160 @@ export function showToast(title, message, type = "success") {
       toast.remove();
     }, 400);
   }, 4500);
+}
+
+// -------------------------------------------------------------
+// 8. RENDERIZADO Y CONTROL DE VISTA DE AJUSTES / PESO CORPORAL
+// -------------------------------------------------------------
+let weightChartInstance = null;
+
+function renderSettingsView(state) {
+  if (!state.activeUser || state.activeView !== 'settings') return;
+
+  const profile = state.userProfiles ? state.userProfiles[state.activeUser] : null;
+  const heightInput = document.getElementById("settings-height");
+  const weightInput = document.getElementById("settings-weight");
+
+  if (profile) {
+    if (heightInput && !heightInput.matches(':focus')) {
+      heightInput.value = profile.height || "";
+    }
+    if (weightInput && !weightInput.matches(':focus')) {
+      weightInput.value = profile.weight || "";
+    }
+  }
+
+  // Renderizar la tabla de historial de peso corporal
+  renderWeightHistoryTable(state);
+
+  // Renderizar el gráfico de peso corporal
+  renderWeightHistoryChart(state);
+}
+
+function renderWeightHistoryTable(state) {
+  const tbody = document.getElementById("weight-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const profile = state.userProfiles ? state.userProfiles[state.activeUser] : null;
+  if (!profile || !profile.weightHistory || profile.weightHistory.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 25px;">No hay registros de peso aún. Completa el formulario de arriba.</td></tr>`;
+    return;
+  }
+
+  // Mostrar ordenado descendente por fecha
+  const sorted = [...profile.weightHistory].sort((a, b) => new Date(b.date + "T00:00:00") - new Date(a.date + "T00:00:00"));
+
+  sorted.forEach(log => {
+    const w = parseFloat(log.weight);
+    const h = parseFloat(profile.height);
+    let imcStr = "—";
+    let statusStr = "—";
+    let statusClass = "neutral";
+
+    if (w > 0 && h > 0) {
+      const imc = w / ((h / 100) * (h / 100));
+      imcStr = imc.toFixed(1);
+      
+      if (imc < 18.5) {
+        statusStr = "Bajo peso";
+        statusClass = "low";
+      } else if (imc < 25) {
+        statusStr = "Normal";
+        statusClass = "normal";
+      } else if (imc < 30) {
+        statusStr = "Sobrepeso";
+        statusClass = "overweight";
+      } else {
+        statusStr = "Obesidad";
+        statusClass = "obese";
+      }
+    }
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${new Date(log.date + "T00:00:00").toLocaleDateString("es-ES", { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
+      <td style="font-weight: 700; color: var(--accent);">${w} kg</td>
+      <td>${h > 0 ? h + " cm" : "—"}</td>
+      <td style="font-weight: 700;">${imcStr}</td>
+      <td><span class="weight-status-badge ${statusClass}">${statusStr}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderWeightHistoryChart(state) {
+  const profile = state.userProfiles ? state.userProfiles[state.activeUser] : null;
+  if (!profile || !profile.weightHistory || profile.weightHistory.length === 0) {
+    if (weightChartInstance) {
+      weightChartInstance.destroy();
+      weightChartInstance = null;
+    }
+    return;
+  }
+
+  // Ordenar cronológicamente para el gráfico de línea
+  const sorted = [...profile.weightHistory].sort((a, b) => new Date(a.date + "T00:00:00") - new Date(b.date + "T00:00:00"));
+  
+  const labels = sorted.map(log => {
+    const d = new Date(log.date + "T00:00:00");
+    return d.toLocaleDateString("es-ES", { day: "2-digit", month: "short" });
+  });
+
+  const weights = sorted.map(log => parseFloat(log.weight));
+
+  const canvas = document.getElementById("weight-history-chart");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  if (weightChartInstance) {
+    weightChartInstance.destroy();
+  }
+
+  weightChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Peso Corporal (kg)",
+          data: weights,
+          borderColor: "#3a86ff",
+          backgroundColor: "rgba(58, 134, 255, 0.05)",
+          borderWidth: 3,
+          pointBackgroundColor: "#3a86ff",
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          tension: 0.25,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: "#f3f4f6", font: { family: 'Outfit', size: 12 } }
+        },
+        tooltip: {
+          backgroundColor: "#0d1221",
+          titleColor: "#f3f4f6",
+          bodyColor: "#f3f4f6",
+          borderColor: "rgba(255,255,255,0.08)",
+          borderWidth: 1
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: "rgba(255,255,255,0.03)" },
+          ticks: { color: "#828fa3" }
+        },
+        y: {
+          grid: { color: "rgba(255,255,255,0.03)" },
+          ticks: { color: "#828fa3" }
+        }
+      }
+    }
+  });
 }

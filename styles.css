@@ -1432,3 +1432,45 @@ body {
   background: rgba(255, 107, 107, 0.1);
 }
 
+/* IMC Status Badges */
+.weight-status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.weight-status-badge.normal {
+  background-color: rgba(0, 245, 155, 0.15);
+  color: var(--primary);
+  border: 1px solid rgba(0, 245, 155, 0.25);
+}
+
+.weight-status-badge.low {
+  background-color: rgba(0, 229, 255, 0.15);
+  color: var(--secondary);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+}
+
+.weight-status-badge.overweight {
+  background-color: rgba(255, 159, 67, 0.15);
+  color: #ff9f43;
+  border: 1px solid rgba(255, 159, 67, 0.25);
+}
+
+.weight-status-badge.obese {
+  background-color: rgba(255, 107, 107, 0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.25);
+}
+
+.weight-status-badge.neutral {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+

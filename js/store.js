@@ -8,8 +8,9 @@ export class WorkoutStore {
     this.state = {
       activeUser: null,
       activeDay: 'lunes',
-      activeView: 'workout', // 'workout' | 'analytics'
-      workoutsHistory: []
+      activeView: 'workout', // 'workout' | 'analytics' | 'settings'
+      workoutsHistory: [],
+      userProfiles: {}
     };
     this.subscribers = new Set();
   }
@@ -34,6 +35,14 @@ export class WorkoutStore {
       await StorageAdapter.saveHistory(history);
     }
     this.state.workoutsHistory = history;
+
+    let profiles = await StorageAdapter.getProfiles();
+    if (!profiles) {
+      profiles = this.generateHistoricalSeedProfiles();
+      await StorageAdapter.saveProfiles(profiles);
+    }
+    this.state.userProfiles = profiles;
+
     this.notify();
   }
 
@@ -284,6 +293,91 @@ export class WorkoutStore {
     }
 
     return seeded;
+  }
+
+  // 7. Sembrado Dinámico de Configuración de Perfiles Físicos
+  generateHistoricalSeedProfiles() {
+    const today = new Date();
+    const formatDate = (daysAgo) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() - daysAgo);
+      return d.toISOString().split("T")[0];
+    };
+
+    return {
+      mateo: {
+        height: 178,
+        weight: 82.5,
+        weightHistory: [
+          { date: formatDate(21), weight: 83.5 },
+          { date: formatDate(14), weight: 83.0 },
+          { date: formatDate(7), weight: 82.8 },
+          { date: formatDate(0), weight: 82.5 }
+        ]
+      },
+      santiago: {
+        height: 174,
+        weight: 76.2,
+        weightHistory: [
+          { date: formatDate(21), weight: 77.0 },
+          { date: formatDate(14), weight: 76.8 },
+          { date: formatDate(7), weight: 76.5 },
+          { date: formatDate(0), weight: 76.2 }
+        ]
+      },
+      alim: {
+        height: 180,
+        weight: 79.5,
+        weightHistory: [
+          { date: formatDate(21), weight: 81.0 },
+          { date: formatDate(14), weight: 80.5 },
+          { date: formatDate(7), weight: 80.0 },
+          { date: formatDate(0), weight: 79.5 }
+        ]
+      }
+    };
+  }
+
+  // Actualizar perfil físico (estatura, peso corporal y registro histórico)
+  async updateProfileSettings(userId, height, weight) {
+    if (!this.state.userProfiles) {
+      this.state.userProfiles = {};
+    }
+    if (!this.state.userProfiles[userId]) {
+      this.state.userProfiles[userId] = {
+        height: 0,
+        weight: 0,
+        weightHistory: []
+      };
+    }
+
+    const todayStr = new Date().toISOString().split("T")[0];
+    const numericHeight = parseFloat(height) || 0;
+    const numericWeight = parseFloat(weight) || 0;
+
+    this.state.userProfiles[userId].height = numericHeight;
+    this.state.userProfiles[userId].weight = numericWeight;
+
+    // Buscar si ya existe un registro de peso para hoy
+    const existingIndex = this.state.userProfiles[userId].weightHistory.findIndex(
+      log => log.date === todayStr
+    );
+
+    if (existingIndex !== -1) {
+      this.state.userProfiles[userId].weightHistory[existingIndex].weight = numericWeight;
+    } else {
+      this.state.userProfiles[userId].weightHistory.push({
+        date: todayStr,
+        weight: numericWeight
+      });
+    }
+
+    // Ordenar historial por fecha cronológica
+    this.state.userProfiles[userId].weightHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Guardar en Storage y notificar a la UI
+    await StorageAdapter.saveProfiles(this.state.userProfiles);
+    this.notify();
   }
 }
 export const store = new WorkoutStore();

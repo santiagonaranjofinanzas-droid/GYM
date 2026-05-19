@@ -82,6 +82,9 @@
           <button class="tab-btn" data-view="analytics">
             <span class="tab-icon">📊</span> Progreso & Métricas
           </button>
+          <button class="tab-btn" data-view="settings">
+            <span class="tab-icon">⚙️</span> Perfil & Peso
+          </button>
         </div>
       </div>
 
@@ -239,6 +242,81 @@
             </div>
           </div>
 
+        </div>
+      </section>
+
+      <!-- ================= VISTA DE CONFIGURACIÓN Y PESO CORPORAL ================= -->
+      <section id="view-settings" class="content-section">
+        <div class="analytics-layout">
+          
+          <!-- Card de Entrada de Medidas Físicas -->
+          <div class="chart-card" style="max-width: 450px; width: 100%; margin: 0 auto 30px auto;">
+            <div class="chart-header">
+              <div class="chart-title-area">
+                <h3>Perfil Físico y Medidas</h3>
+                <p>Registra tu estatura y peso corporal para el seguimiento del IMC</p>
+              </div>
+            </div>
+            
+            <div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label for="settings-height" style="font-weight: 600; font-size: 0.9rem; color: var(--text-muted);">Estatura Actual (cm)</label>
+                <div class="input-container" style="justify-content: flex-start;">
+                  <input type="number" step="0.5" id="settings-height" class="set-input" style="width: 120px; text-align: left; padding: 10px 15px;" placeholder="Ej. 175">
+                  <span class="input-unit" style="font-size: 1rem; font-weight: 600;">cm</span>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <label for="settings-weight" style="font-weight: 600; font-size: 0.9rem; color: var(--text-muted);">Peso Corporal de Hoy (kg)</label>
+                <div class="input-container" style="justify-content: flex-start;">
+                  <input type="number" step="0.1" id="settings-weight" class="set-input" style="width: 120px; text-align: left; padding: 10px 15px;" placeholder="Ej. 75.8">
+                  <span class="input-unit" style="font-size: 1rem; font-weight: 600;">kg</span>
+                </div>
+              </div>
+
+              <div style="margin-top: 10px;">
+                <button id="btn-save-settings" class="btn-save-workout" style="width: 100%; padding: 12px 20px;">
+                  <span>💾</span> Guardar Medidas y Peso
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card de Gráfico de Evolución del Peso Corporal -->
+          <div class="chart-card" style="flex: 1; min-width: 320px;">
+            <div class="chart-header">
+              <div class="chart-title-area">
+                <h3>Historial de Peso Corporal</h3>
+                <p>Evolución cronológica de tu peso corporal registrado</p>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 300px;">
+              <canvas id="weight-history-chart"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tabla Histórica de Pesos -->
+        <div class="history-card" style="margin-top: 30px;">
+          <h3>Historial de Registros de Peso</h3>
+          <div class="history-table-container">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Fecha de Registro</th>
+                  <th>Peso Corporal (kg)</th>
+                  <th>Estatura Registrada</th>
+                  <th>Índice de Masa Corporal (IMC)</th>
+                  <th>Clasificación</th>
+                </tr>
+              </thead>
+              <tbody id="weight-table-body">
+                <!-- Rellenado por JS -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
